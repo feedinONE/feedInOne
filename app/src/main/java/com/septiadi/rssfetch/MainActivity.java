@@ -34,7 +34,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        new curlRSS().execute("http://www.merdeka.com/feed/");
+//        new curlRSS().execute("http://www.merdeka.com/feed/");
+//        new curlRSS().execute("http://rss.detik.com/gads.php/news");
+        new curlRSS().execute("http://www.republika.co.id/rss");
         ll = (LinearLayout)findViewById(R.id.linkList);
     }
 
@@ -194,13 +196,15 @@ public class MainActivity extends AppCompatActivity {
         closeButton.setVisibility(View.VISIBLE);
 
         WebView mWebView = (WebView)findViewById(R.id.webView);
-        mWebView.getSettings().setBuiltInZoomControls(true);
-        mWebView.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
-        mWebView.setBackgroundColor(Color.TRANSPARENT);
-        mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_INSET);
+//        mWebView.getSettings().setBuiltInZoomControls(true);
+//        mWebView.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
+//        mWebView.setBackgroundColor(Color.TRANSPARENT);
+//        mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_INSET);
+
+        mWebView.getSettings().setJavaScriptEnabled(true);//enable javascript true
 
         mWebView.loadUrl(Url);
-        mWebView.setWebViewClient(new MyWebViewClient());
+        mWebView.setWebViewClient(new MyWebViewClient());//used for opening in this app
         mWebView.setVisibility(View.VISIBLE);
 
     }
