@@ -10,18 +10,18 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -62,8 +62,6 @@ public class MainActivity extends AppCompatActivity {
                 xmlParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
                 xmlParser.setInput(stream, null);
 
-
-
                 String[] links = XMLParserHanlder(xmlParser);
 
                 publishProgress(links);
@@ -71,29 +69,6 @@ public class MainActivity extends AppCompatActivity {
 
 //--------------- parser ---------------
 
-//                int status = conn.getResponseCode();
-//                System.out.println(status);
-//
-//                String content = conn.getContentEncoding();
-//                System.out.println(content);
-//
-//                switch (status) {
-//                    case 200:
-//                    case 201:
-//                        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//                        StringBuilder sb = new StringBuilder();
-//                        String line;
-//                        while ((line = br.readLine()) != null) {
-//                            sb.append(line+"\n");
-//                        }
-//                        br.close();
-//                        System.out.println(sb.toString());
-//
-//                        publishProgress(sb.toString());
-//
-//                        return sb.toString();
-//
-//                }
 
             }catch (Exception e) {
 
@@ -116,22 +91,31 @@ public class MainActivity extends AppCompatActivity {
             Button addButton;
             int i = 0;
             for (String val: values) {//loop generate button here
+                JSONObject obj;
+                try {
+                    obj = new JSONObject(val);
 
-                addButton = new Button(getApplicationContext());
-                addButton.setText(val);
-                addButton.setId(i + 1);
-                addButton.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        // Perform action on click
-                        Button b = (Button)v;
-                        String buttonText = b.getText().toString();
-                        loadDetailPage(buttonText);
-                    }
-                });
 
-                ll.addView(addButton);
+                    addButton = new Button(getApplicationContext());
+                    addButton.setText(obj.getString("title"));
+                    addButton.setTag(obj.getString("link"));
+                    addButton.setId(i + 1);
+                    addButton.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            // Perform action on click
+                            Button b = (Button)v;
+                            String buttonText = b.getTag().toString();
+                            loadDetailPage(buttonText);
+                        }
+                    });
 
-                i++;
+                    ll.addView(addButton);
+
+                    i++;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
     }
@@ -139,9 +123,9 @@ public class MainActivity extends AppCompatActivity {
     public String[] XMLParserHanlder(XmlPullParser myParser) {
         int event;
         String text=null;
-        ArrayList<String> titles = new ArrayList<String>();
-        ArrayList<String> links = new ArrayList<String>();
-        ArrayList<String> descriptions = new ArrayList<String>();
+        ArrayList<String> items = new ArrayList<>();
+
+        JSONObject subitem = new JSONObject();
 
         try {
             event = myParser.getEventType();
@@ -159,18 +143,20 @@ public class MainActivity extends AppCompatActivity {
 
                     case XmlPullParser.END_TAG:
 
+                        if(name.equals("item")){
+                            items.add(subitem.toString());
+                        }
+
                         if(name.equals("title")){
-                            titles.add(text);
+                            subitem.put("title", text);
                         }
 
                         else if(name.equals("link")){
-                            links.add(text);
-
-                            System.out.println(links);
+                            subitem.put("link", text);
                         }
 
                         else if(name.equals("description")){
-                            descriptions.add(text);
+                            subitem.put("description", text);
                         }
 
                         else{
@@ -189,8 +175,8 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        String[] linksArray = links.toArray(new String[links.size()]);
-        return linksArray;
+        String[] itemsArray = items.toArray(new String[items.size()]);
+        return itemsArray;
     }
 
     private class MyWebViewClient extends WebViewClient {
@@ -203,9 +189,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadDetailPage(String Url) {
-
-//        TextView mytext = (TextView) findViewById(R.id.mytext);
-//        mytext.setText(Url);
 
         Button closeButton = (Button) findViewById(R.id.closeDetail);
         closeButton.setVisibility(View.VISIBLE);
