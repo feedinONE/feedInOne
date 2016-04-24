@@ -3,6 +3,7 @@ package com.septiadi.rssfetch;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -28,24 +29,30 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
-    LinearLayout ll;
+    LinearLayout ll,listRssButton;
 
     private XmlPullParserFactory xmlFactoryObject;
     public volatile boolean parsingComplete = true;
 
     int cont;
+    int rssTotal = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        new curlRSS().execute("http://www.merdeka.com/feed/");
-//        new curlRSS().execute("http://rss.detik.com/gads.php/news");
-        new curlRSS().execute("http://www.republika.co.id/rss");
+
+        new curlRSS().execute(new String[]{"Detik", "http://rss.detik.com/gads.php/news", "0"});
+        new curlRSS().execute(new String[]{"Republika","http://www.republika.co.id/rss","1"});
+        new curlRSS().execute(new String[]{"Merdeka","http://www.merdeka.com/feed/","2"});
+        new curlRSS().execute(new String[]{"Tempo","https://rss.tempo.co/index.php/teco/news/feed/start/0/limit/30","3"});
+        new curlRSS().execute(new String[]{"Sindo","http://www.sindonews.com/feed","4"});
         ll = (LinearLayout)findViewById(R.id.linkList);
+        listRssButton = (LinearLayout)findViewById(R.id.listRssButton);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -87,10 +94,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     class curlRSS extends AsyncTask<String, String, String> {
+        protected String rssTitle;
+        protected Integer layoutId;
         @Override
         protected String doInBackground(String... urls) {
             try {
-                URL url = new URL(urls[0]);
+                URL url = new URL(urls[1]);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestProperty("User-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4");
                 conn.setReadTimeout(10000 /* milliseconds */);
@@ -111,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
                 xmlParser.setInput(stream, null);
 
                 String[] links = XMLParserHanlder(xmlParser);
+                rssTitle = urls[0];
+                layoutId = Integer.valueOf(urls[2]);
 
                 publishProgress(links);
                 stream.close();
@@ -136,8 +147,39 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         protected void onProgressUpdate(String... values) {
+            LinearLayout rssList = new LinearLayout(getApplicationContext());
+            rssList.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            rssList.setOrientation(LinearLayout.VERTICAL);
+            rssList.setId(layoutId);
+            if(layoutId != 0) {
+                rssList.setVisibility(View.GONE);
+            }
+
+            Button rssButton = null;
+            rssButton = new Button(getApplicationContext());
+            rssButton.setText(rssTitle);
+            rssButton.setTag(rssTitle);
+            rssButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    for (int  i = 0;i < rssTotal; i++){
+                        String linId = "" + i;
+                        int resID = getResources().getIdentifier(linId, "id", "com.septiadi.rssfetch");
+                        LinearLayout hideLin = (LinearLayout) findViewById(resID);
+
+                        if(layoutId != i) {
+                            hideLin.setVisibility(View.GONE);
+                        }else{
+                            hideLin.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            });
+            listRssButton.addView(rssButton);
+
+
+
+
             Button addButton;
-            int i = 0;
             for (String val: values) {//loop generate button here
                 JSONObject obj;
                 try {
@@ -145,26 +187,29 @@ public class MainActivity extends AppCompatActivity {
 
 
                     addButton = new Button(getApplicationContext());
-                    addButton.setText(obj.getString("title"));
+                    addButton.setText(rssTitle+" " +
+                            ": "+obj.getString("title"));
                     addButton.setTag(obj.getString("link"));
-                    addButton.setId(i + 1);
+//                    addButton.setId(countAllRssLinks + 1);
                     addButton.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
                             // Perform action on click
-                            Button b = (Button)v;
+                            Button b = (Button) v;
                             String buttonText = b.getTag().toString();
                             loadDetailPage(buttonText);
                         }
                     });
 
-                    ll.addView(addButton);
+                    rssList.addView(addButton);
 
-                    i++;
+//                    countAllRssLinks++;
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
             }
+
+            ll.addView(rssList);
         }
     }
 
@@ -247,7 +292,8 @@ public class MainActivity extends AppCompatActivity {
 //        mWebView.setBackgroundColor(Color.TRANSPARENT);
 //        mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_INSET);
 
-        mWebView.getSettings().setJavaScriptEnabled(true);//enable javascript true
+        mWebView.getSettings().setJavaScriptEnabled(false);//javascript setting
+        mWebView.getSettings().setLoadsImagesAutomatically(false);//disable load image
 
         mWebView.loadUrl(Url);
         mWebView.setWebViewClient(new MyWebViewClient());//used for opening in this app
