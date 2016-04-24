@@ -3,72 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.septiadi.rssfetch.MainActivity"
     android:orientation="vertical"
     >
-    <!--<TextView-->
-        <!--android:id="@+id/mytext"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="hii"-->
-        <!--/>-->
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbar"
+        />
 
-    <Button
-        android:id="@+id/closeDetail"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Close Detail"
-        android:onClick="closeDetail"
-        android:visibility="gone"
-    />
+    <include layout="@layout/layout_web_view"
+        />
 
-    <WebView android:id="@+id/webView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <HorizontalScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <Button
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:text="Detik.Com"
-                    android:visibility="gone"
-                    />
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Merdeka.Com"
-                    android:visibility="gone"
-                    />
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Republika.Co.Id"
-                    />
-            </LinearLayout>
-        </HorizontalScrollView>
-        <ScrollView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                android:id="@+id/linkList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
-            </LinearLayout>
-        </ScrollView>
+
+        <include layout="@layout/layout_rss_button"
+            />
+
+        <include layout="@layout/layout_link_list"
+            />
+
     </LinearLayout>
 </LinearLayout>

@@ -1,15 +1,21 @@
 package com.septiadi.rssfetch;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private XmlPullParserFactory xmlFactoryObject;
     public volatile boolean parsingComplete = true;
 
+    int cont;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +46,44 @@ public class MainActivity extends AppCompatActivity {
 //        new curlRSS().execute("http://rss.detik.com/gads.php/news");
         new curlRSS().execute("http://www.republika.co.id/rss");
         ll = (LinearLayout)findViewById(R.id.linkList);
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home){
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void onBackPressed(){
+        cont++;
+        if(cont % 2 != 0){
+            Toast.makeText(getApplicationContext(), "Press once again to exit", Toast.LENGTH_SHORT).show();
+        }else if(cont % 2 == 0){
+            final AlertDialog.Builder confirm = new AlertDialog.Builder(MainActivity.this);
+            confirm.setMessage("Exit application?");
+            confirm.setPositiveButton("Y", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    finish();
+                }
+            });
+            confirm.setNegativeButton("N", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    cont=0;
+                }
+            });
+
+            confirm.show();
+        }
     }
 
     class curlRSS extends AsyncTask<String, String, String> {
