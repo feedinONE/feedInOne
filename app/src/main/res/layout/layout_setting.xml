@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/setting"
+    android:padding="10dp"
+    android:visibility="gone"
+    >
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TableLayout
+                android:id="@+id/rssSettingList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:stretchColumns="1"
+                android:weightSum="5" >
+                <TableRow>
+                    <EditText
+                        android:id="@+id/rssTitleInput"
+                        android:hint="Rss Title"
+                        />
+                    <EditText
+                        android:id="@+id/rssUrlInput"
+                        android:hint="Rss Url"
+                        />
+                    <Button
+                        android:onClick="addRss"
+                        android:text="add"
+                        android:textColor="#FFFFFF"
+                        android:layout_alignParentRight="true"
+                        />
+                </TableRow>
+                <!--<TableRow>-->
+                <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:text="repubilka"-->
+                <!--android:padding="3dip"-->
+                <!--android:layout_weight="2"/>-->
+                <!--<TextView-->
+                <!--android:layout_width="220dp"-->
+                <!--android:text="https://rss.tempo.co/index.php/teco/news/feed/start/0/limit/30"-->
+                <!--android:gravity="center"-->
+                <!--android:padding="3dip"-->
+                <!--android:layout_weight="2"/>-->
+                <!--<Button-->
+                <!--android:layout_width="50dp"-->
+                <!--android:layout_height="35dp"-->
+                <!--android:text="x"-->
+                <!--android:textColor="#FFFFFF"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:background="@drawable/button3"-->
+                <!--android:layout_weight="1"-->
+                <!--/>-->
+                <!--</TableRow>-->
+            </TableLayout>
+
+        </HorizontalScrollView>
+    </ScrollView>
+    <TextView
+        android:id="@+id/textRss"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""/>
+</LinearLayout>

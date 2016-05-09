@@ -10,6 +10,9 @@
         android:id="@+id/toolbar"
         />
 
+    <include layout="@layout/layout_setting"
+        />
+
     <include layout="@layout/layout_web_view"
         />
 
